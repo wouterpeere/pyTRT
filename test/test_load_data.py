@@ -1,7 +1,9 @@
-import numpy as np
+from pyTRT import TRTData, FOLDER
+
 import pytest
 
-from pyTRT import TRTData, FOLDER
+import numpy as np
+import pandas as pd
 
 
 def test_value_errors_trt():
@@ -35,6 +37,12 @@ def test_p_average():
     data = TRTData(open(FOLDER.parent.joinpath("examples/data/Linz.csv"), "rb"), 't [s]', 'Tf [degC]',
                    col_power='P [W]',
                    decimal=',', average_power=8000)
+    assert np.isclose(data.average_power, 8000)
+    assert np.allclose(np.full(len(data._time_array), 8000), data.power_array)
+    assert np.allclose(np.log(data._time_array), data.log_time_array)
+    data = TRTData(pd.read_csv(open(FOLDER.parent.joinpath("examples/data/Linz.csv"), "rb"), decimal=',', sep=';'),
+                   't [s]',
+                   'Tf [degC]', col_power='P [W]', average_power=8000)
     assert np.isclose(data.average_power, 8000)
     assert np.allclose(np.full(len(data._time_array), 8000), data.power_array)
     assert np.allclose(np.log(data._time_array), data.log_time_array)

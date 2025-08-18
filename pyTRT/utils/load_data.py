@@ -1,6 +1,8 @@
 """
 This file contains the base class for the loading and storing of the pyTRT measurements.
 """
+from typing import Union
+
 import warnings
 
 import pandas as pd
@@ -9,7 +11,8 @@ import numpy as np
 
 class TRTData:
 
-    def __init__(self, file: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
+    def __init__(self, file: Union[pd.DataFrame, str, bytes], col_time: str, col_temp_avg: str = None,
+                 col_temp_in: str = None,
                  col_temp_out: str = None, col_power: str = None, average_power: float = None,
                  undisturbed_ground: float = None, start_index: int = 0, **kwargs):
         """
@@ -19,7 +22,7 @@ class TRTData:
 
         Parameters
         ----------
-        file : str
+        file : str, pandas.DataFram, bytes
             Location of the csv file (or the file itself) with the pyTRT measurements.
         col_time : str
             Name of the column header with the time values in seconds.
@@ -64,7 +67,8 @@ class TRTData:
         self.undisturbed_ground_temperature: float = undisturbed_ground if undisturbed_ground is not None else \
             self._temperature_array[0]
 
-    def load_trt_data(self, file: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
+    def load_trt_data(self, file: Union[pd.DataFrame, str, bytes], col_time: str, col_temp_avg: str = None,
+                      col_temp_in: str = None,
                       col_temp_out: str = None, col_power: str = None, **kwargs) -> None:
         """
         This function loads the pyTRT data. Either the average fluid temperatures should be provided or both the
@@ -72,7 +76,7 @@ class TRTData:
 
         Parameters
         ----------
-        file : str
+        file : str, pandas.DataFram, bytes
             Location of the csv file (or the file itself) with the pyTRT measurements.
         col_time : str
             Name of the column header with the time values in seconds.
@@ -107,6 +111,8 @@ class TRTData:
         if isinstance(file, str):
             with open(file, 'rb') as f:
                 df = pd.read_csv(f, sep=kwargs.get('sep', ';'), decimal=kwargs.get('decimal', '.'))
+        elif isinstance(file, pd.DataFrame):
+            df = file
         else:
             # assume it's already a file-like object
             df = pd.read_csv(file, sep=kwargs.get('sep', ';'), decimal=kwargs.get('decimal', '.'))

@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Update documentation with installation instructions.
-- You can also use a file for the TRTData class instead of a file location.
+- You can also use a file of pandas.DataFram for the TRTData class instead of a file location.
 
 ## [0.0.2] - 2025-07-22
 
