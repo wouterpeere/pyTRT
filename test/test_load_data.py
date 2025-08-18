@@ -32,6 +32,12 @@ def test_p_average():
     assert np.isclose(data.average_power, 8000)
     assert np.allclose(np.full(len(data._time_array), 8000), data.power_array)
     assert np.allclose(np.log(data._time_array), data.log_time_array)
+    data = TRTData(open(FOLDER.parent.joinpath("examples/data/Linz.csv"), "rb"), 't [s]', 'Tf [degC]',
+                   col_power='P [W]',
+                   decimal=',', average_power=8000)
+    assert np.isclose(data.average_power, 8000)
+    assert np.allclose(np.full(len(data._time_array), 8000), data.power_array)
+    assert np.allclose(np.log(data._time_array), data.log_time_array)
 
 
 def test_avg_t():

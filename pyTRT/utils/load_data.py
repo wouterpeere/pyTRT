@@ -9,7 +9,7 @@ import numpy as np
 
 class TRTData:
 
-    def __init__(self, file_location: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
+    def __init__(self, file: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
                  col_temp_out: str = None, col_power: str = None, average_power: float = None,
                  undisturbed_ground: float = None, start_index: int = 0, **kwargs):
         """
@@ -19,8 +19,8 @@ class TRTData:
 
         Parameters
         ----------
-        file_location : str
-            Location of the csv file with the pyTRT measurements.
+        file : str
+            Location of the csv file (or the file itself) with the pyTRT measurements.
         col_time : str
             Name of the column header with the time values in seconds.
         col_temp_avg : str
@@ -47,7 +47,7 @@ class TRTData:
         self._temperature_array: np.ndarray = np.array([])
         self._power_array: np.ndarray = np.array([])
 
-        self.load_trt_data(file_location, col_time, col_temp_avg, col_temp_in, col_temp_out, col_power, **kwargs)
+        self.load_trt_data(file, col_time, col_temp_avg, col_temp_in, col_temp_out, col_power, **kwargs)
 
         if start_index < 0 or start_index > len(self._time_array):
             raise ValueError('Please provide a valid start index.')
@@ -64,7 +64,7 @@ class TRTData:
         self.undisturbed_ground_temperature: float = undisturbed_ground if undisturbed_ground is not None else \
             self._temperature_array[0]
 
-    def load_trt_data(self, file_location: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
+    def load_trt_data(self, file: str, col_time: str, col_temp_avg: str = None, col_temp_in: str = None,
                       col_temp_out: str = None, col_power: str = None, **kwargs) -> None:
         """
         This function loads the pyTRT data. Either the average fluid temperatures should be provided or both the
@@ -72,8 +72,8 @@ class TRTData:
 
         Parameters
         ----------
-        file_location : str
-            Location of the csv file with the pyTRT measurements.
+        file : str
+            Location of the csv file (or the file itself) with the pyTRT measurements.
         col_time : str
             Name of the column header with the time values in seconds.
         col_temp_avg : str
@@ -104,7 +104,12 @@ class TRTData:
             raise ValueError('Either the average fluid temperature or the inlet and outlet fluid temperature'
                              'should be provided.')
 
-        df = pd.read_csv(open(file_location, 'rb'), sep=kwargs.get('sep', ';'), decimal=kwargs.get('decimal', '.'))
+        if isinstance(file, str):
+            with open(file, 'rb') as f:
+                df = pd.read_csv(f, sep=kwargs.get('sep', ';'), decimal=kwargs.get('decimal', '.'))
+        else:
+            # assume it's already a file-like object
+            df = pd.read_csv(file, sep=kwargs.get('sep', ';'), decimal=kwargs.get('decimal', '.'))
 
         self._time_array = np.array(df[col_time])
 
