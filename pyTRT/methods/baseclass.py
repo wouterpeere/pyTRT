@@ -16,3 +16,5 @@ class _Method:
     """
     borehole_resistance: float
     thermal_conductivity: float
+    _a: float = 0
+    _b: float = 0

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from GHEtool import GroundConstantTemperature
 from pyTRT import TRTData, FOLDER
 from pyTRT.methods import ILS, _Method
 
@@ -30,3 +31,10 @@ def test_ravensburg_ils():
     result = ILS(linz, 193.5, 0.2 / 2, 2.26e6)
     assert np.isclose(result.thermal_conductivity, 2.267969906573817)
     assert np.isclose(result.borehole_resistance, 0.0817363638417728)
+
+    ground = GroundConstantTemperature(2, 10, 2.26e6)
+    result = ILS(linz, 193.5, 0.2 / 2, ground)
+    assert np.isclose(result.thermal_conductivity, 2.267969906573817)
+    assert np.isclose(result.borehole_resistance, 0.0817363638417728)
+    assert np.isclose(result._a, 1.7454382119664755)
+    assert np.isclose(result._b, 4.108257293968212)
